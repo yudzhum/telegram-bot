@@ -130,18 +130,10 @@ category = "main"
 optional = false
 python-versions = ">=3.7"
 
-[[package]]
-name = "telegram"
-version = "0.0.1"
-description = "Telegram APIs"
-category = "main"
-optional = false
-python-versions = "*"
-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "7a3d21afe09af34cf58fdcb4b746def524a205b6736aec303132410fae2e9ca6"
+content-hash = "72fb515ddcbddefe51e5b42738adcf3e29a4d950e729d888ede9a6e2b12d4866"
 
 [metadata.files]
 anyio = [
@@ -183,7 +175,4 @@ python-telegram-bot = [
 sniffio = [
     {file = "sniffio-1.3.0-py3-none-any.whl", hash = "sha256:eecefdce1e5bbfb7ad2eeaabf7c1eeb404d7757c379bd1f7e5cce9d8bf425384"},
     {file = "sniffio-1.3.0.tar.gz", hash = "sha256:e60305c5e5d314f5389259b7f22aaa33d8f7dee49763119234af3755c55b9101"},
-]
-telegram = [
-    {file = "telegram-0.0.1.tar.gz", hash = "sha256:d405a0af4c868a8dbeae6d03e297e21c7ee6269e11e2ed3810e15544aba02591"},
 ]

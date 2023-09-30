@@ -8,9 +8,8 @@ packages = [{include = "telegram_bot"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-python-telegram-bot = "^20.5"
-telegram = "^0.0.1"
 python-dotenv = "^1.0.0"
+python-telegram-bot = "^20.5"
 
 
 [build-system]
