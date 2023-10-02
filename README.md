@@ -4,7 +4,7 @@ TODO
 2. Bot commands:
 
 /start - greeting message. <br >
-/allbooks - all books from the list.
-/already - book that was read.
-/now - current book.
-/vote - voting for the next book.
+/allbooks - all books from the list. <br >
+/already - book that was read. <br >
+/now - current book. <br >
+/vote - voting for the next book. <br >
