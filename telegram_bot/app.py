@@ -35,6 +35,13 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message_texts.HELP
+    )
+
+
 if __name__ == '__main__':
     application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
     
@@ -43,5 +50,8 @@ if __name__ == '__main__':
 
     help_handler = CommandHandler('help', help)
     application.add_handler(help_handler)
+
+    all_books_handler = CommandHandler('allbooks', all_books)
+    application.add_handler(all_books_handler)
     
     application.run_polling()
