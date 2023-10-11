@@ -3,8 +3,11 @@ TODO
 1. Greeting message with bot commands and help
 2. Bot commands:
 
-/start - greeting message. <br >
-/allbooks - all books from the list. <br >
-/already - book that was read. <br >
-/now - current book. <br >
-/vote - voting for the next book. <br >
+/start - greeting message.
+/help - info.
+/allbooks - all books from the list.
+/already - book that was read.
+/now - current book.
+/vote - voting for the next book.
+
+3. Only memebers of book club can vote
