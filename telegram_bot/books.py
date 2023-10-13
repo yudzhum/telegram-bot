@@ -7,6 +7,11 @@ import aiosqlite
 import config
 
 
+def _chunks(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
 @dataclass
 class Book:
     id: int
@@ -24,7 +29,7 @@ class Category:
     books: List[Book]
 
 
-async def get_all_books() -> List[Category]:
+async def get_all_books(chunk_size: int) -> List[Category]:
     books = []
     async with aiosqlite.connect(config.SQLITE_DB) as db:
         db.row_factory = aiosqlite.Row
@@ -47,4 +52,4 @@ async def get_all_books() -> List[Category]:
                     read_start=row["read_start"],
                     read_finish=row["read_finish"],
                 ))
-    return books
+    return _chunks(books, chunk_size)

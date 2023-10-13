@@ -37,12 +37,13 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    all_books = await get_all_books()
-    response = "\n".join((book.name for book in all_books))
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=response
-    )
+    all_books_chunks = await get_all_books(chunk_size=50)
+    for chunk in all_books_chunks:    
+        response = "\n".join((book.name for book in chunk))
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=response
+        )
 
 # "\n".join((book.name for book in all_books))
 
