@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 
 import logging
+import telegram
 from telegram import Update 
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
 from telegram_bot import message_texts
@@ -37,15 +38,17 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    all_books_chunks = await get_all_books(chunk_size=50)
-    for chunk in all_books_chunks:    
-        response = "\n".join((book.name for book in chunk))
+    categories_with_books = await get_all_books()
+    for category in categories_with_books:   
+        response = f" <b> {category.name} </b> \n\n"
+        for index, book in enumerate(category.books, 1):
+            response += f"{index}. {book.name}\n"
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=response
+            text=response,
+            parse_mode=telegram.constants.ParseMode.HTML
         )
 
-# "\n".join((book.name for book in all_books))
 
 if __name__ == '__main__':
     application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()

@@ -29,20 +29,37 @@ class Category:
     books: List[Book]
 
 
-async def get_all_books(chunk_size: int) -> List[Category]:
+def _group_books_by_categoies(books: List[Book]) -> List[Category]:
+    categories = []
+    category_id = None
+    for book in books:
+        if category_id != book.category_id:
+            categories.append(Category(
+                id=book.category_id,
+                name=book.category_name,
+                books=[book]
+            ))
+            category_id = book.category_id
+            continue
+        # category_id = book.category_id
+        categories[-1].books.append(book)
+    return categories
+
+
+async def get_all_books() -> List[Category]:
     books = []
     async with aiosqlite.connect(config.SQLITE_DB) as db:
         db.row_factory = aiosqlite.Row
-        async with db.execute("""SELECT      
-        b.id as book_id,   
-        b.name as book_name,
-        c.id as category_id,
-        c.name as category_name,                     
-        b.read_start,
-        b.read_finish
-        FROM book as b
-        LEFT JOIN book_category c ON c.id=b.category_id
-        """) as cursor:
+        async with db.execute("""
+                SELECT      
+                    b.id as book_id,   
+                    b.name as book_name,
+                    c.id as category_id,
+                    c.name as category_name,                     
+                    b.read_start,
+                    b.read_finish
+                FROM book as b
+                LEFT JOIN book_category c ON c.id=b.category_id""") as cursor:
             async for row in cursor:
                 books.append(Book(
                     id=row["book_id"],
@@ -52,4 +69,4 @@ async def get_all_books(chunk_size: int) -> List[Category]:
                     read_start=row["read_start"],
                     read_finish=row["read_finish"],
                 ))
-    return _chunks(books, chunk_size)
+    return _group_books_by_categoies(books)
