@@ -70,3 +70,31 @@ async def get_all_books() -> List[Category]:
                     read_finish=row["read_finish"],
                 ))
     return _group_books_by_categoies(books)
+
+
+async def get_already_readen_books() -> List[Book]:
+    books = []
+    async with aiosqlite.connect(config.SQLITE_DB) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute("""
+                SELECT
+                    b.id as book_id,   
+                    b.name as book_name,
+                    c.id as category_id,
+                    c.name as category_name,                     
+                    b.read_start,
+                    b.read_finish
+                FROM book as b
+                LEFT JOIN book_category c ON c.id=b.category_id
+                WHERE read_start < current_date
+                    AND read_finish <= current_date""") as cursor:
+            async for row in cursor:
+                books.append(Book(
+                    id=row["book_id"],
+                    name=row["book_name"],
+                    category_id=row["category_id"],
+                    category_name=row["category_name"],
+                    read_start=row["read_start"],
+                    read_finish=row["read_finish"],
+                ))
+    return books
