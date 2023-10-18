@@ -18,8 +18,8 @@ class Book:
     name: str
     category_id: int
     category_name: str or None
-    read_start: datetime or None
-    read_finish: datetime or None
+    read_start: str or None
+    read_finish: str or None
 
 
 @dataclass
@@ -47,19 +47,12 @@ def _group_books_by_categoies(books: List[Book]) -> List[Category]:
 
 
 async def get_all_books() -> List[Category]:
+    sql = _get_books_base_sql() + """
+        ORDER BY c."ordering", b."ordering" """
     books = []
     async with aiosqlite.connect(config.SQLITE_DB) as db:
         db.row_factory = aiosqlite.Row
-        async with db.execute("""
-                SELECT      
-                    b.id as book_id,   
-                    b.name as book_name,
-                    c.id as category_id,
-                    c.name as category_name,                     
-                    b.read_start,
-                    b.read_finish
-                FROM book as b
-                LEFT JOIN book_category c ON c.id=b.category_id""") as cursor:
+        async with db.execute(sql) as cursor:
             async for row in cursor:
                 books.append(Book(
                     id=row["book_id"],
@@ -73,28 +66,54 @@ async def get_all_books() -> List[Category]:
 
 
 async def get_already_readen_books() -> List[Book]:
+    sql = _get_books_base_sql() + """
+        WHERE read_start < current_date
+            AND read_finish <= current_date
+        ORDER BY b.read_start"""
+    return await _get_books_from_db(sql)
+
+
+async def get_book_we_reading_now() -> List[Book]:
+    sql = _get_books_base_sql() + """
+                WHERE read_start <= current_date
+                    AND read_finish >= current_date"""
+    return await _get_books_from_db(sql)
+
+
+def _get_books_base_sql():
+    return """
+        SELECT
+            b.id as book_id,   
+            b.name as book_name,
+            c.id as category_id,
+            c.name as category_name,                     
+            b.read_start,
+            b.read_finish
+        FROM book as b
+        LEFT JOIN book_category c ON c.id=b.category_id
+        """
+
+async def _get_books_from_db(sql) -> List[Book]:
     books = []
     async with aiosqlite.connect(config.SQLITE_DB) as db:
         db.row_factory = aiosqlite.Row
-        async with db.execute("""
-                SELECT
-                    b.id as book_id,   
-                    b.name as book_name,
-                    c.id as category_id,
-                    c.name as category_name,                     
-                    b.read_start,
-                    b.read_finish
-                FROM book as b
-                LEFT JOIN book_category c ON c.id=b.category_id
-                WHERE read_start < current_date
-                    AND read_finish <= current_date""") as cursor:
+        async with db.execute(sql) as cursor:
             async for row in cursor:
+                read_start, read_finish = map(
+                    lambda date: datetime.strptime(date, "%Y-%m-%d"),
+                    (row["read_start"], row["read_finish"])
+                )
+                read_start, read_finish = map(
+                    lambda date: date.strftime(config.DATE_FORMAT),
+                    (read_start, read_finish)
+                )
+
                 books.append(Book(
                     id=row["book_id"],
                     name=row["book_name"],
                     category_id=row["category_id"],
                     category_name=row["category_name"],
-                    read_start=row["read_start"],
-                    read_finish=row["read_finish"],
+                    read_start=read_start,
+                    read_finish=read_finish,
                 ))
     return books

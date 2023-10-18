@@ -8,7 +8,11 @@ import telegram
 from telegram import Update 
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
 from telegram_bot import message_texts
-from telegram_bot.books import get_all_books, get_already_readen_books
+from telegram_bot.books import (
+    get_all_books,
+    get_already_readen_books,
+    get_book_we_reading_now
+)
 import config
 
 
@@ -56,18 +60,25 @@ async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def already(update: Update, context: ContextTypes.DEFAULT_TYPE):
     already_readen_books = await get_already_readen_books()
     response = "Прочитанные книги:\n\n"
-    for index, book in enumerate(already_readen_books, 1):
-        read_start, read_finish = map(
-            lambda date: datetime.strptime(date, "%Y-%m-%d"),
-            (book.read_start, book.read_finish)
-        )
-        read_start, read_finish = map(
-            lambda date: date.strftime(config.DATE_FORMAT),
-            (read_start, read_finish)
-        )      
+    for index, book in enumerate(already_readen_books, 1):     
         response += (
             f'{index}. {book.name} '
-            f'читали ({read_start} - {read_finish})\n'
+            f'читали ({book.read_start} - {book.read_finish})\n'
+        )
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=response
+    )
+
+
+    
+async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    now_read_books = await get_book_we_reading_now()
+    response = "Сейчас мы читаем:\n\n"
+    for index, book in enumerate(now_read_books, 1):      
+        response += (
+            f'{index}. {book.name} '
+            f'читаем ({book.read_start} - {book.read_finish})\n'
         )
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -89,5 +100,8 @@ if __name__ == '__main__':
 
     already_handler = CommandHandler('already', already)
     application.add_handler(already_handler)
+
+    now_handler = CommandHandler('now', now)
+    application.add_handler(now_handler)
     
     application.run_polling()
