@@ -73,7 +73,7 @@ async def get_already_readen_books() -> List[Book]:
     return await _get_books_from_db(sql)
 
 
-async def get_book_we_reading_now() -> List[Book]:
+async def get_books_we_reading_now() -> List[Book]:
     sql = _get_books_base_sql() + """
                 WHERE read_start <= current_date
                     AND read_finish >= current_date"""

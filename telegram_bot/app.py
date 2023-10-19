@@ -11,7 +11,7 @@ from telegram_bot import message_texts
 from telegram_bot.books import (
     get_all_books,
     get_already_readen_books,
-    get_book_we_reading_now
+    get_books_we_reading_now
 )
 import config
 
@@ -73,7 +73,7 @@ async def already(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     
 async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    now_read_books = await get_book_we_reading_now()
+    now_read_books = await get_books_we_reading_now()
     response = "Сейчас мы читаем:\n\n"
     for index, book in enumerate(now_read_books, 1):      
         response += (
