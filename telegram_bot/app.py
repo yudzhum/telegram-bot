@@ -89,7 +89,7 @@ async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=response
+        text=message_texts.HELP
     )
 
 
