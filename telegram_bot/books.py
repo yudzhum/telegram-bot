@@ -16,6 +16,15 @@ class Book:
     read_start: str or None
     read_finish: str or None
 
+    def __post_init__(self):
+        """Set up read_start and read_finish to needed string format"""
+        for field in ("read_start", "read_finish"):
+            value = getattr(self, field)
+            if value is None:
+                continue
+            value = datetime.strptime(value, "%Y-%m-%d").strftime(config.DATE_FORMAT)
+            setattr(self, field, value)
+
 
 @dataclass
 class Category:
@@ -75,27 +84,19 @@ def _get_books_base_sql():
         LEFT JOIN book_category c ON c.id=b.category_id
         """
 
+
 async def _get_books_from_db(sql) -> List[Book]:
     books = []
     async with aiosqlite.connect(config.SQLITE_DB) as db:
         db.row_factory = aiosqlite.Row
         async with db.execute(sql) as cursor:
             async for row in cursor:
-                read_start, read_finish = map(
-                    lambda date: datetime.strptime(date, "%Y-%m-%d"),
-                    (row["read_start"], row["read_finish"])
-                )
-                read_start, read_finish = map(
-                    lambda date: date.strftime(config.DATE_FORMAT),
-                    (read_start, read_finish)
-                )
-
                 books.append(Book(
                     id=row["book_id"],
                     name=row["book_name"],
                     category_id=row["category_id"],
                     category_name=row["category_name"],
-                    read_start=read_start,
-                    read_finish=read_finish,
+                    read_start=row["read_start"],
+                    read_finish=row["read_finish"],
                 ))
     return books
