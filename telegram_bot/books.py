@@ -7,11 +7,6 @@ import aiosqlite
 import config
 
 
-def _chunks(lst, n):
-    for i in range(0, len(lst), n):
-        yield lst[i:i + n]
-
-
 @dataclass
 class Book:
     id: int
@@ -41,7 +36,6 @@ def _group_books_by_categoies(books: List[Book]) -> List[Category]:
             ))
             category_id = book.category_id
             continue
-        # category_id = book.category_id
         categories[-1].books.append(book)
     return categories
 
@@ -49,19 +43,7 @@ def _group_books_by_categoies(books: List[Book]) -> List[Category]:
 async def get_all_books() -> List[Category]:
     sql = _get_books_base_sql() + """
         ORDER BY c."ordering", b."ordering" """
-    books = []
-    async with aiosqlite.connect(config.SQLITE_DB) as db:
-        db.row_factory = aiosqlite.Row
-        async with db.execute(sql) as cursor:
-            async for row in cursor:
-                books.append(Book(
-                    id=row["book_id"],
-                    name=row["book_name"],
-                    category_id=row["category_id"],
-                    category_name=row["category_name"],
-                    read_start=row["read_start"],
-                    read_finish=row["read_finish"],
-                ))
+    books = await _get_books_from_db(sql)
     return _group_books_by_categoies(books)
 
 

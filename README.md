@@ -11,3 +11,15 @@ TODO
 /vote - voting for the next book.
 
 3. Only memebers of book club can vote
+
+## Status of book
+
+1. unread
+2. will be read
+3. reading now
+4. already read
+
+## TODO 
+
+- add a voting reminder
+- add leaders by points in the voting
