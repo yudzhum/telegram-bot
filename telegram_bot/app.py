@@ -86,6 +86,13 @@ async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=response
+    )
+
+
 if __name__ == '__main__':
     application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
     
@@ -104,4 +111,7 @@ if __name__ == '__main__':
     now_handler = CommandHandler('now', now)
     application.add_handler(now_handler)
     
+    vote_handler = CommandHandler('vote', vote)
+    application.add_handler(vote_handler)
+
     application.run_polling()
