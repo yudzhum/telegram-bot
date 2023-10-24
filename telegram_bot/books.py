@@ -51,6 +51,14 @@ def _group_books_by_categoies(books: List[Book]) -> List[Category]:
 
 async def get_all_books() -> List[Category]:
     sql = _get_books_base_sql() + """
+        WHERE b.read_start IS NULL
+        ORDER BY c."ordering", b."ordering" """
+    books = await _get_books_from_db(sql)
+    return _group_books_by_categoies(books)
+
+
+async def get_unread_books() -> List[Category]:
+    sql = _get_books_base_sql() + """
         ORDER BY c."ordering", b."ordering" """
     books = await _get_books_from_db(sql)
     return _group_books_by_categoies(books)
