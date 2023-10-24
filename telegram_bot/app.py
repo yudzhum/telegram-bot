@@ -87,9 +87,22 @@ async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    categories_with_books = await get_all_books()
+    index = 1
+    for category in categories_with_books:   
+        response = f" <b> {category.name} </b> \n\n"
+        for book in category.books:
+            response += f"{index}. {book.name}\n"
+            index += 1
+        await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=response,
+        parse_mode=telegram.constants.ParseMode.HTML
+        )
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=message_texts.HELP
+        text=message_texts.VOTE,
+        parse_mode=telegram.constants.ParseMode.HTML
     )
 
 
