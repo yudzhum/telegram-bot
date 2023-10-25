@@ -1,12 +1,19 @@
 import os
 from dotenv import load_dotenv
+import re
 
 from datetime import datetime
 
 import logging
 import telegram
 from telegram import Update 
-from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
+from telegram.ext import (
+    ApplicationBuilder,
+    ContextTypes,
+    CommandHandler,
+    MessageHandler,
+    filters
+)
 from telegram_bot import message_texts
 from telegram_bot.books import (
     get_all_books,
@@ -106,6 +113,19 @@ async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_message = update.message.text
+    numbers = re.findall("\d+", user_message)
+    if len(numbers) != 3:
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=message_texts.VOTE_PROCESS_INCORRECT_INPUT,
+            parse_mode=telegram.constants.ParseMode.HTML
+        )
+        return
+
+
+
 if __name__ == '__main__':
     application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
     
@@ -126,5 +146,9 @@ if __name__ == '__main__':
     
     vote_handler = CommandHandler('vote', vote)
     application.add_handler(vote_handler)
+
+    vote_process_handler = MessageHandler(filters.TEXT & (~filters.COMMAND),
+                                         vote_process)
+    application.add_handler(vote_process_handler)
 
     application.run_polling()
