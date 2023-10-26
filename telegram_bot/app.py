@@ -18,6 +18,7 @@ from telegram_bot import message_texts
 from telegram_bot.books import (
     get_all_books,
     get_already_readen_books,
+    get_books_by_numbers,
     get_books_we_reading_now
 )
 import config
@@ -116,6 +117,7 @@ async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_message = update.message.text
     numbers = re.findall("\d+", user_message)
+    numbers = tuple(map(int, numbers))
     if len(numbers) != 3:
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
@@ -123,7 +125,9 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode=telegram.constants.ParseMode.HTML
         )
         return
-
+    
+    books = await get_books_by_numbers(numbers)
+    print(books)
 
 
 if __name__ == '__main__':

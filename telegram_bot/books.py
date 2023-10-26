@@ -79,13 +79,29 @@ async def get_books_we_reading_now() -> List[Book]:
     return await _get_books_from_db(sql)
 
 
-def _get_books_base_sql():
-    return """
+async def get_books_by_numbers(numbers) -> List[Book]:
+    numbers_joined = ", ".join(map(str, map(int, numbers)))
+    base_sql = _get_books_base_sql(
+        'ROW_NUMBER() OVER (order by c."ordering", b."ordering") as idx'
+    )
+    sql = f"""
+        SELECT t.* FROM (
+            {base_sql}
+            WHERE read_start IS NULL
+        ) t
+        WHERE t.idx IN ({numbers_joined})
+    """
+    return await _get_books_from_db(sql)
+
+
+def _get_books_base_sql(select_param: str or None = None) -> str:
+    return f"""
         SELECT
             b.id as book_id,   
             b.name as book_name,
             c.id as category_id,
-            c.name as category_name,                     
+            c.name as category_name,
+            {select_param + "," if select_param else ""}                   
             b.read_start,
             b.read_finish
         FROM book as b
