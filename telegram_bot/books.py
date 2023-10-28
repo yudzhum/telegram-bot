@@ -81,17 +81,34 @@ async def get_books_we_reading_now() -> List[Book]:
 
 async def get_books_by_numbers(numbers) -> List[Book]:
     numbers_joined = ", ".join(map(str, map(int, numbers)))
+
+    hardcoded_sql_values = []
+    for index, number in enumerate(numbers, 1):
+        hardcoded_sql_values.append(f"({number}, {index})")
+
+    output_hardcoded_sql_values = ", ".join(hardcoded_sql_values)
+
     base_sql = _get_books_base_sql(
         'ROW_NUMBER() OVER (order by c."ordering", b."ordering") as idx'
     )
     sql = f"""
+        SELECT t2.* FROM (
+          VALUES {output_hardcoded_sql_values}
+        ) t0
+        INNER JOIN
+        (
         SELECT t.* FROM (
             {base_sql}
             WHERE read_start IS NULL
         ) t
         WHERE t.idx IN ({numbers_joined})
+        ) t2
+        ON t0.column1 = t2.idx
+        ORDER BY t0.column2
     """
-    return await _get_books_from_db(sql)
+    books = await _get_books_from_db(sql)
+    return books
+
 
 
 def _get_books_base_sql(select_param: str or None = None) -> str:
