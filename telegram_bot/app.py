@@ -127,7 +127,14 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     
     books = await get_books_by_numbers(numbers)
-    print(books)
+    response = "Ура, ты выбрали три книги! \n"
+    for index, book in enumerate(books, 1):
+        response += f"{index}. {book.name}\n"
+    await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=response,
+            parse_mode=telegram.constants.ParseMode.HTML
+        )
 
 
 if __name__ == '__main__':
