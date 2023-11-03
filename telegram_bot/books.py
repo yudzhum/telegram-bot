@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List
+from typing import Iterable, List
 
 import aiosqlite
 
@@ -30,10 +30,10 @@ class Book:
 class Category:
     id: int
     name: str
-    books: List[Book]
+    books: Iterable[Book]
 
 
-def _group_books_by_categoies(books: List[Book]) -> List[Category]:
+def _group_books_by_categoies(books: Iterable[Book]) -> Iterable[Category]:
     categories = []
     category_id = None
     for book in books:
@@ -49,7 +49,7 @@ def _group_books_by_categoies(books: List[Book]) -> List[Category]:
     return categories
 
 
-async def get_all_books() -> List[Category]:
+async def get_all_books() -> Iterable[Category]:
     sql = _get_books_base_sql() + """
         WHERE b.read_start IS NULL
         ORDER BY c."ordering", b."ordering" """
@@ -57,14 +57,14 @@ async def get_all_books() -> List[Category]:
     return _group_books_by_categoies(books)
 
 
-async def get_unread_books() -> List[Category]:
+async def get_unread_books() -> Iterable[Category]:
     sql = _get_books_base_sql() + """
         ORDER BY c."ordering", b."ordering" """
     books = await _get_books_from_db(sql)
     return _group_books_by_categoies(books)
 
 
-async def get_already_readen_books() -> List[Book]:
+async def get_already_readen_books() -> Iterable[Book]:
     sql = _get_books_base_sql() + """
         WHERE read_start < current_date
             AND read_finish <= current_date
@@ -72,14 +72,14 @@ async def get_already_readen_books() -> List[Book]:
     return await _get_books_from_db(sql)
 
 
-async def get_books_we_reading_now() -> List[Book]:
+async def get_books_we_reading_now() -> Iterable[Book]:
     sql = _get_books_base_sql() + """
                 WHERE read_start <= current_date
                     AND read_finish >= current_date"""
     return await _get_books_from_db(sql)
 
 
-async def get_books_by_numbers(numbers) -> List[Book]:
+async def get_books_by_numbers(numbers) -> Iterable[Book]:
     numbers_joined = ", ".join(map(str, map(int, numbers)))
 
     hardcoded_sql_values = []
@@ -110,6 +110,9 @@ async def get_books_by_numbers(numbers) -> List[Book]:
     return books
 
 
+async def save_vote(telegram_user_id: int, books: Iterable[Book]):
+    pass
+
 
 def _get_books_base_sql(select_param: str or None = None) -> str:
     return f"""
@@ -126,7 +129,7 @@ def _get_books_base_sql(select_param: str or None = None) -> str:
         """
 
 
-async def _get_books_from_db(sql) -> List[Book]:
+async def _get_books_from_db(sql) -> Iterable[Book]:
     books = []
     async with aiosqlite.connect(config.SQLITE_DB) as db:
         db.row_factory = aiosqlite.Row
