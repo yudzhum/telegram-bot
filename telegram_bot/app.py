@@ -117,16 +117,23 @@ async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_message = update.message.text
     numbers = re.findall("\d+", user_message)
-    numbers = tuple(map(int, numbers))
-    if len(numbers) != 3:
+    numbers = tuple(set(map(int, numbers)))
+    if len(numbers) != config.VOTE_ELEMENTS_COUNT:
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=message_texts.VOTE_PROCESS_INCORRECT_INPUT,
             parse_mode=telegram.constants.ParseMode.HTML
         )
         return
-    
     books = await get_books_by_numbers(numbers)
+    if len(books) != config.VOTE_ELEMENTS_COUNT:
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=message_texts.VOTE_PROCESS_INCORRECT_BOOKS,
+            parse_mode=telegram.constants.ParseMode.HTML
+        )
+        return
+
     response = "Ура, ты выбрали три книги! \n"
     for index, book in enumerate(books, 1):
         response += f"{index}. {book.name}\n"
