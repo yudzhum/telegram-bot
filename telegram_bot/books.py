@@ -111,7 +111,7 @@ async def get_books_by_numbers(numbers) -> Iterable[Book]:
 
 
 async def save_vote(telegram_user_id: int, books: Iterable[Book]):
-    pass
+    _insert_user(telegram_user_id)
 
 
 def _get_books_base_sql(select_param: str or None = None) -> str:
