@@ -41,3 +41,6 @@ VOTE_PROCESS_INCORRECT_INPUT = """НЕ смог прочесть твое соо
 VOTE_PROCESS_INCORRECT_BOOKS = """
 Переданы некорректные номера книг, пожалуйста, проверь их!
 """
+
+
+NO_ACTUAL_VOTING = """Нут текущего голосования"""

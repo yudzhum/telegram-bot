@@ -5,6 +5,7 @@ from typing import Iterable, List
 import aiosqlite
 
 import config
+from telegram_bot.users import _insert_user
 
 
 @dataclass
