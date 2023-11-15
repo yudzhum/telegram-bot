@@ -43,4 +43,4 @@ VOTE_PROCESS_INCORRECT_BOOKS = """
 """
 
 
-NO_ACTUAL_VOTING = """Нут текущего голосования"""
+NO_ACTUAL_VOTING = """Нет активного голосования"""
