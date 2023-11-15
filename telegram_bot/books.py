@@ -3,9 +3,8 @@ from datetime import datetime
 from typing import Iterable, List
 
 import aiosqlite
-
 import config
-from telegram_bot.users import _insert_user
+
 
 
 @dataclass
@@ -109,10 +108,6 @@ async def get_books_by_numbers(numbers) -> Iterable[Book]:
     """
     books = await _get_books_from_db(sql)
     return books
-
-
-async def save_vote(telegram_user_id: int, books: Iterable[Book]):
-    _insert_user(telegram_user_id)
 
 
 def _get_books_base_sql(select_param: str or None = None) -> str:

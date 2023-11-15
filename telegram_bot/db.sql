@@ -211,3 +211,6 @@ read_start='2023-01-01',
 read_finish='2023-02-12',
 read_comments='отличная книга по SQL в исполнении постгреса'
 where name='PostgreSQL. Основы языка SQL :: Евгений Моргунов';
+
+
+insert into voting (voting_start, voting_finish) values ('2023-11-11', '2023-11-26');

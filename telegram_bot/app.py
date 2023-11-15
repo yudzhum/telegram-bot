@@ -96,12 +96,13 @@ async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if get_actual_voting_id() is None:
+    if await get_actual_voting_id() is None:
         await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message_texts.NO_ACTUAL_VOTING,
         parse_mode=telegram.constants.ParseMode.HTML
-    )
+        )
+        return
 
 
     categories_with_books = await get_all_books()
@@ -124,6 +125,14 @@ async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if await get_actual_voting_id() is None:
+        await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message_texts.NO_ACTUAL_VOTING,
+        parse_mode=telegram.constants.ParseMode.HTML
+        )
+        return
+
     user_message = update.message.text
     numbers = re.findall("\d+", user_message)
     numbers = tuple(set(map(int, numbers)))
