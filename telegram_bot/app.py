@@ -22,7 +22,7 @@ from telegram_bot.books import (
     get_books_we_reading_now
 )
 import config
-from telegram_bot.voting import get_actual_voting_id
+from telegram_bot.voting import get_actual_voting_id, save_vote
 
 
 logging.basicConfig(
@@ -151,6 +151,8 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode=telegram.constants.ParseMode.HTML
         )
         return
+
+    await save_vote(update.effective_user.id, books)
 
     response = "Ура, ты выбрали три книги! \n"
     for index, book in enumerate(books, 1):
