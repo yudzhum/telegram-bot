@@ -22,7 +22,10 @@ from telegram_bot.books import (
     get_books_we_reading_now
 )
 import config
-from telegram_bot.voting import get_actual_voting_id, save_vote
+from telegram_bot.voting import (
+    get_actual_voting_id,
+    save_vote
+)
 
 
 logging.basicConfig(
@@ -135,8 +138,7 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user_message = update.message.text
     numbers = re.findall("\d+", user_message)
-    numbers = tuple(set(map(int, numbers)))
-    if len(numbers) != config.VOTE_ELEMENTS_COUNT:
+    if len(tuple(set(map(int, numbers)))) != config.VOTE_ELEMENTS_COUNT:
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=message_texts.VOTE_PROCESS_INCORRECT_INPUT,
