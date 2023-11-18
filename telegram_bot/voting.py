@@ -32,7 +32,7 @@ async def save_vote(telegram_user_id: int, books: Iterable[Book]):
         logging.warning("No actual coting in save_vote()")
         return
     sql = """
-        INSERT INTO vote 
+        INSERT OR REPLACE INTO vote 
             (vote_id, user_id, first_book_id, second_book_id, third_book_id) 
         VALUES (:vote_id, :user_id, :first_book, :second_book, :third_book)
         """
