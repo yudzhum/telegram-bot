@@ -24,6 +24,7 @@ from telegram_bot.books import (
 import config
 from telegram_bot.voting import (
     get_actual_voting_id,
+    get_leaders,
     save_vote
 )
 
@@ -164,6 +165,11 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=response,
             parse_mode=telegram.constants.ParseMode.HTML
         )
+    
+
+async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    leaders = get_leaders()
+    response = "ТОП 5 книг голосования"
 
 
 if __name__ == '__main__':
@@ -190,5 +196,8 @@ if __name__ == '__main__':
     vote_process_handler = MessageHandler(filters.TEXT & (~filters.COMMAND),
                                          vote_process)
     application.add_handler(vote_process_handler)
+
+    vote_results_handler = CommandHandler('voteresults', vote_results)
+    application.add_handler(vote_results_handler)
 
     application.run_polling()
