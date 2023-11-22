@@ -2,9 +2,27 @@ from typing import Iterable
 import aiosqlite
 import config
 import logging
-from telegram_bot.books import Book
+from dataclasses import dataclass
 
+
+from telegram_bot.books import Book
 from telegram_bot.users import insert_user
+
+
+@dataclass
+class BookVoteResult:
+    book: Book
+    score: int
+
+
+@dataclass
+class VoteResults:
+    vote_start: str
+    vote_finish: str
+    leaders: Iterable[BookVoteResult]
+
+
+logger = logging.getLogger(__name__)
 
 
 async def get_actual_voting_id() -> int or None:
@@ -46,3 +64,7 @@ async def save_vote(telegram_user_id: int, books: Iterable[Book]):
             "third_book": books[2].id,
         })
         await db.commit()
+
+
+async def get_leaders():
+    pass
